@@ -91,6 +91,7 @@ export default function RevenueTracker() {
     const quotaPct = latest.monthly_quota > 0 ? (latest.revenue_mtd / latest.monthly_quota * 100).toFixed(1) : 0
     const quarterPct = latest.quarter_quota > 0 ? (latest.quarter_revenue_ytd / latest.quarter_quota * 100).toFixed(1) : 0
     const quotaGap = (latest.monthly_quota || 0) - (latest.revenue_mtd || 0)
+    const rptQuarterLabel = latest.quarter_name || CLIENT.getCurrentQuarter()
     const totalBandRev = (latest.run_rate_rev||0) + (latest.tier25to50_rev||0) + (latest.tier50to100_rev||0) + (latest.tier100plus_rev||0)
     const totalBandDeals = (latest.run_rate_deals||0) + (latest.tier25to50_deals||0) + (latest.tier50to100_deals||0) + (latest.tier100plus_deals||0)
 
@@ -338,7 +339,7 @@ ${funnelSummary}`
 
   <div class="header">
     <h1>📊 ${reportTitle}</h1>
-    <p>Week Ending ${latest.week_ending} &nbsp;·&nbsp; ${latest.current_month} &nbsp;·&nbsp; ${latest.quarter_name} ${CLIENT.getCurrentFY()} &nbsp;·&nbsp; ${CLIENT.name}</p>
+    <p>Week Ending ${latest.week_ending} &nbsp;·&nbsp; ${latest.current_month || ''} &nbsp;·&nbsp; ${rptQuarterLabel} ${CLIENT.getCurrentFY()} &nbsp;·&nbsp; ${CLIENT.name}</p>
     <div class="header-meta">
       <span>To: <strong>${CLIENT.reportRecipients}</strong></span>
       <span>Prepared by: <strong>${CLIENT.platform.name}</strong></span>
@@ -359,7 +360,7 @@ ${funnelSummary}`
       <p style="font-size:11px;color:#475569;margin:0">Revenue MTD · quota ${fmt(latest.monthly_quota)}</p>
     </div>
     <div style="background:white;border-radius:12px;border:1px solid #e2e8f0;padding:20px">
-      <p style="font-size:11px;font-weight:600;color:#475569;text-transform:uppercase;letter-spacing:.05em;margin:0 0 6px">${latest.quarter_name} YTD progress</p>
+      <p style="font-size:11px;font-weight:600;color:#475569;text-transform:uppercase;letter-spacing:.05em;margin:0 0 6px">${rptQuarterLabel} YTD progress</p>
       <p style="font-size:22px;font-weight:700;color:#0f172a;margin:0 0 2px">${fmt(latest.quarter_revenue_ytd)}</p>
       <p style="font-size:11px;color:#475569;margin:0 0 12px">${quarterPct}% of ${fmt(latest.quarter_quota)}</p>
       <div style="background:#f1f5f9;border-radius:999px;height:18px;overflow:hidden;margin-bottom:6px">
@@ -397,7 +398,7 @@ ${funnelSummary}`
       <div class="sub">${fmtRatio(latest.coverage_ratio)} coverage ratio</div>
     </div>
     <div class="stat-card" style="border-top: 3px solid ${quarterColor}">
-      <div class="label">${latest.quarter_name} YTD</div>
+      <div class="label">${rptQuarterLabel} YTD</div>
       <div class="value">${fmt(latest.quarter_revenue_ytd)}</div>
       <div class="progress-bar"><div class="progress-fill" style="width:${Math.min(parseFloat(quarterPct),100)}%;background:${quarterColor}"></div></div>
       <div class="sub">${quarterPct}% of ${fmt(latest.quarter_quota)}</div>
@@ -512,8 +513,9 @@ ${funnelSummary}`
 
   const latest = snapshots[snapshots.length - 1]
   const previous = snapshots.length > 1 ? snapshots[snapshots.length - 2] : null
-  const quotaAchievement = latest.monthly_quota > 0 ? (latest.revenue_mtd / latest.monthly_quota * 100).toFixed(1) : 0
-  const quarterAchievement = latest.quarter_quota > 0 ? (latest.quarter_revenue_ytd / latest.quarter_quota * 100).toFixed(1) : 0
+  const quotaAchievement = latest.monthly_quota > 0 ? (latest.revenue_mtd / latest.monthly_quota * 100).toFixed(1) : null
+  const quarterAchievement = latest.quarter_quota > 0 ? (latest.quarter_revenue_ytd / latest.quarter_quota * 100).toFixed(1) : null
+  const quarterLabel = latest.quarter_name || CLIENT.getCurrentQuarter()
 
   const chartData = snapshots.map(s => ({
     label: s.label?.replace('Week ', 'Wk ')?.replace(' FINAL', ' Final') || s.week_ending,
@@ -585,9 +587,9 @@ ${funnelSummary}`
               </div>
             </div>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <StatCard label="Revenue MTD" value={fmt(latest.revenue_mtd)} sub={`${quotaAchievement}% of ${fmt(latest.monthly_quota)} quota`} trend={previous ? `${fmt(latest.revenue_mtd - previous.revenue_mtd)} vs last week` : null} trendGood={(latest.revenue_mtd||0) >= (previous?.revenue_mtd||0)} accent="border-l-green-500" />
+              <StatCard label="Revenue MTD" value={fmt(latest.revenue_mtd)} sub={quotaAchievement != null ? `${quotaAchievement}% of ${fmt(latest.monthly_quota)} quota` : 'No quota set'} trend={previous ? `${fmt(latest.revenue_mtd - previous.revenue_mtd)} vs last week` : null} trendGood={(latest.revenue_mtd||0) >= (previous?.revenue_mtd||0)} accent="border-l-green-500" />
               <StatCard label="Open Pipeline" value={fmt(latest.open_pipeline)} sub={`${fmtRatio(latest.coverage_ratio)} coverage`} trend={previous ? `${fmt(Math.abs(latest.open_pipeline - previous.open_pipeline))} ${latest.open_pipeline >= previous.open_pipeline ? '↑' : '↓'}` : null} trendGood={(latest.open_pipeline||0) >= (previous?.open_pipeline||0)} accent="border-l-blue-500" />
-              <StatCard label={`${latest.quarter_name} Progress`} value={fmt(latest.quarter_revenue_ytd)} sub={`${quarterAchievement}% of ${fmt(latest.quarter_quota)}`} accent="border-l-amber-500" />
+              <StatCard label={`${quarterLabel} Progress`} value={fmt(latest.quarter_revenue_ytd)} sub={quarterAchievement != null ? `${quarterAchievement}% of ${fmt(latest.quarter_quota)}` : 'No quota set'} accent="border-l-amber-500" />
               <StatCard label="Weighted Funnel" value={fmt(latest.weighted_funnel)} sub="Probability-adjusted" accent="border-l-purple-500" />
             </div>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -612,15 +614,15 @@ ${funnelSummary}`
             </div>
             <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
               <div className="flex justify-between items-center mb-3">
-                <h3 className="font-semibold text-gray-800">{latest.quarter_name} FY25 Progress</h3>
-                <span className="text-sm text-gray-500">{fmt(latest.quarter_revenue_ytd)} of {fmt(latest.quarter_quota)}</span>
+                <h3 className="font-semibold text-gray-800">{quarterLabel} {CLIENT.getCurrentFY()} Progress</h3>
+                <span className="text-sm text-gray-500">{fmt(latest.quarter_revenue_ytd)} of {latest.quarter_quota > 0 ? fmt(latest.quarter_quota) : 'no quota set'}</span>
               </div>
               <div className="h-6 bg-gray-100 rounded-full overflow-hidden">
-                <div className={`h-full rounded-full transition-all ${parseFloat(quarterAchievement) >= 90 ? 'bg-green-500' : parseFloat(quarterAchievement) >= 60 ? 'bg-blue-500' : 'bg-amber-500'}`} style={{ width: `${Math.min(parseFloat(quarterAchievement), 100)}%` }} />
+                <div className={`h-full rounded-full transition-all ${parseFloat(quarterAchievement||0) >= 90 ? 'bg-green-500' : parseFloat(quarterAchievement||0) >= 60 ? 'bg-blue-500' : 'bg-amber-500'}`} style={{ width: `${Math.min(parseFloat(quarterAchievement||0), 100)}%` }} />
               </div>
               <div className="flex justify-between text-xs text-gray-500 mt-1">
-                <span>{quarterAchievement}% achieved</span>
-                <span>{fmt(latest.quarter_quota - latest.quarter_revenue_ytd)} remaining</span>
+                <span>{quarterAchievement != null ? `${quarterAchievement}% achieved` : 'No quota set'}</span>
+                <span>{latest.quarter_quota > 0 ? `${fmt((latest.quarter_quota||0) - (latest.quarter_revenue_ytd||0))} remaining` : ''}</span>
               </div>
             </div>
             {latest.notes && <div className="bg-amber-50 border border-amber-200 rounded-xl p-4"><p className="text-xs font-semibold text-amber-700 uppercase tracking-wide mb-2">Latest Analysis</p><p className="text-amber-900 text-sm leading-relaxed">{latest.notes}</p></div>}
