@@ -39,16 +39,23 @@ export default function RevenueBridgePage() {
 
   const model = useMemo(() => calculateRevenueModel(assumptions), [assumptions])
 
-  const sensitivityModel = useMemo(() => calculateRevenueModel({
-    ...assumptions,
-    expansion_rate_y1: sliderExpansion,
-    expansion_rate_y2: sliderExpansion + 0.05,
-    expansion_rate_y3: sliderExpansion + 0.10,
-    rep_quota: sliderQuota,
-    retention_y1: sliderRetention,
-    retention_y2: sliderRetention + 0.05,
-    retention_y3: sliderRetention + 0.10,
-  }), [sliderExpansion, sliderQuota, sliderRetention, assumptions])
+  const sensitivityModel = useMemo(() => {
+    const result = calculateRevenueModel({
+      ...assumptions,
+      expansion_rate_y1: sliderExpansion,
+      expansion_rate_y2: sliderExpansion + 0.05,
+      expansion_rate_y3: sliderExpansion + 0.10,
+      rep_quota: sliderQuota,
+      retention_y1: sliderRetention,
+      retention_y2: sliderRetention + 0.05,
+      retention_y3: sliderRetention + 0.10,
+    })
+    console.log('[Sensitivity]', result.projected_55m_quarter, result.months_ahead_behind, 'gap:', Math.round(result.gap.y3))
+    return result
+  }, [sliderExpansion, sliderQuota, sliderRetention, assumptions])
+
+  // Key that changes when sensitivity result changes, used for animation
+  const sensitivityKey = `${sensitivityModel.projected_55m_quarter}-${sensitivityModel.months_ahead_behind}-${Math.round(sensitivityModel.gap.y3)}`
 
   // Chart data
   const stackedData = [
@@ -191,10 +198,30 @@ export default function RevenueBridgePage() {
             <h3 className="font-semibold text-gray-800 mb-1">Assumption Sensitivity</h3>
             <p className="text-xs text-gray-400">Move any lever to see the impact on your $55M date</p>
           </div>
-          <div className="flex items-center gap-4 bg-gray-50 rounded-lg p-4">
-            <p className="text-lg font-bold" style={{ color: CLIENT.brand.primary }}>{sensitivityModel.projected_55m_quarter}</p>
-            <p className={`text-sm font-medium ${sensitivityModel.projected_55m_on_track ? 'text-green-600' : 'text-amber-600'}`}>
-              {sensitivityModel.months_ahead_behind >= 0 ? `${sensitivityModel.months_ahead_behind}mo ahead` : `${Math.abs(sensitivityModel.months_ahead_behind)}mo behind`}
+
+          {/* Prominent Result Card — animates on change */}
+          <div key={sensitivityKey}
+            className="rounded-xl p-5 border-2 animate-[pulse_0.4s_ease-in-out_1]"
+            style={{
+              borderColor: sensitivityModel.projected_55m_on_track ? '#16a34a' : CLIENT.brand.primary,
+              background: sensitivityModel.projected_55m_on_track ? '#f0fdf4' : '#fef2f2',
+            }}>
+            <p className="text-xs font-semibold uppercase tracking-wide mb-2" style={{ color: sensitivityModel.projected_55m_on_track ? '#16a34a' : CLIENT.brand.primary }}>
+              At these settings
+            </p>
+            <div className="flex items-baseline gap-3 mb-2">
+              <p className="text-3xl font-black" style={{ color: sensitivityModel.projected_55m_on_track ? '#16a34a' : CLIENT.brand.primary }}>
+                {sensitivityModel.projected_55m_quarter}
+              </p>
+              <p className={`text-lg font-semibold ${sensitivityModel.projected_55m_on_track ? 'text-green-600' : 'text-red-600'}`}>
+                {sensitivityModel.months_ahead_behind >= 0
+                  ? `${sensitivityModel.months_ahead_behind}mo ahead`
+                  : `${Math.abs(sensitivityModel.months_ahead_behind)}mo behind`}
+              </p>
+            </div>
+            <p className="text-sm text-gray-600">
+              Hunters must close: <span className="font-bold text-gray-900">{fmt$(sensitivityModel.gap.y3)}</span>
+              {' · '}Reps needed: <span className="font-bold text-gray-900">{sensitivityModel.reps_needed}</span>
             </p>
           </div>
 
@@ -202,33 +229,36 @@ export default function RevenueBridgePage() {
           <div>
             <div className="flex justify-between text-sm mb-1">
               <span className="font-medium text-gray-700">Expansion Rate</span>
-              <span className="font-semibold text-gray-900">{Math.round(sliderExpansion * 100)}%</span>
+              <span className="font-bold text-lg tabular-nums" style={{ color: CLIENT.brand.primary }}>{Math.round(sliderExpansion * 100)}%</span>
             </div>
             <input type="range" min={0.10} max={0.35} step={0.01} value={sliderExpansion}
               onChange={e => setSliderExpansion(parseFloat(e.target.value))}
               className="w-full h-2 rounded-lg appearance-none cursor-pointer" style={{ accentColor: CLIENT.brand.primary }} />
+            <div className="flex justify-between text-xs text-gray-400 mt-0.5"><span>10%</span><span>35%</span></div>
           </div>
 
           {/* Rep Quota */}
           <div>
             <div className="flex justify-between text-sm mb-1">
               <span className="font-medium text-gray-700">Rep Quota</span>
-              <span className="font-semibold text-gray-900">${(sliderQuota / 1000000).toFixed(1)}M</span>
+              <span className="font-bold text-lg tabular-nums" style={{ color: CLIENT.brand.primary }}>${(sliderQuota / 1000000).toFixed(1)}M</span>
             </div>
             <input type="range" min={500000} max={2000000} step={50000} value={sliderQuota}
               onChange={e => setSliderQuota(parseFloat(e.target.value))}
               className="w-full h-2 rounded-lg appearance-none cursor-pointer" style={{ accentColor: CLIENT.brand.primary }} />
+            <div className="flex justify-between text-xs text-gray-400 mt-0.5"><span>$500K</span><span>$2.0M</span></div>
           </div>
 
           {/* Retention Rate */}
           <div>
             <div className="flex justify-between text-sm mb-1">
               <span className="font-medium text-gray-700">Retention Rate</span>
-              <span className="font-semibold text-gray-900">{Math.round(sliderRetention * 100)}%</span>
+              <span className="font-bold text-lg tabular-nums" style={{ color: CLIENT.brand.primary }}>{Math.round(sliderRetention * 100)}%</span>
             </div>
             <input type="range" min={0.60} max={0.95} step={0.01} value={sliderRetention}
               onChange={e => setSliderRetention(parseFloat(e.target.value))}
               className="w-full h-2 rounded-lg appearance-none cursor-pointer" style={{ accentColor: CLIENT.brand.primary }} />
+            <div className="flex justify-between text-xs text-gray-400 mt-0.5"><span>60%</span><span>95%</span></div>
           </div>
         </div>
 
