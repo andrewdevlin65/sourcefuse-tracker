@@ -221,7 +221,10 @@ export default function RevenueBridgePage() {
             </div>
             <p className="text-sm text-gray-600">
               Hunters must close: <span className="font-bold text-gray-900">{fmt$(sensitivityModel.gap.y3)}</span>
-              {' · '}Reps needed: <span className="font-bold text-gray-900">{sensitivityModel.reps_needed}</span>
+            </p>
+            <p className="text-sm text-gray-600 mt-1">
+              Reps needed: <span className={`font-bold ${sensitivityModel.reps_needed > (CLIENT.hirePlan?.reps?.length || 4) ? 'text-red-600' : 'text-green-700'}`}>{sensitivityModel.reps_needed}</span>
+              {' · '}Your plan: <span className="font-bold text-gray-900">{CLIENT.hirePlan?.reps?.length || 4} reps</span>
             </p>
           </div>
 
@@ -247,6 +250,7 @@ export default function RevenueBridgePage() {
               onChange={e => setSliderQuota(parseFloat(e.target.value))}
               className="w-full h-2 rounded-lg appearance-none cursor-pointer" style={{ accentColor: CLIENT.brand.primary }} />
             <div className="flex justify-between text-xs text-gray-400 mt-0.5"><span>$500K</span><span>$2.0M</span></div>
+            <p className="text-xs text-gray-400 mt-1 italic">Affects headcount required, not stream projections</p>
           </div>
 
           {/* Retention Rate */}
