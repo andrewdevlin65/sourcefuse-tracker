@@ -126,7 +126,7 @@ export default function RevenueBridgePage() {
             <ComposedChart data={stackedData}>
               <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
               <XAxis dataKey="year" tick={{ fontSize: 13 }} />
-              <YAxis tickFormatter={v => `$${(v / 1000000).toFixed(0)}M`} tick={{ fontSize: 12 }} />
+              <YAxis domain={[0, 60000000]} tickFormatter={v => `$${(v / 1000000).toFixed(0)}M`} tick={{ fontSize: 12 }} />
               <Tooltip content={<CustomTooltip />} />
               <Legend />
               <Bar dataKey="stream1" name="Stream 1: Recurring" stackId="a" fill="#3b82f6" />
