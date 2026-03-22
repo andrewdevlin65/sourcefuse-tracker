@@ -35,10 +35,10 @@ function SignOutButton() {
 
   return (
     <button onClick={handleSignOut}
-      className="text-xs px-2 py-1 rounded transition-colors"
-      style={{ color: '#64748b' }}
+      className="px-2 py-1 rounded transition-colors"
+      style={{ color: 'rgba(255,255,255,0.7)', fontSize: 13 }}
       onMouseOver={e => e.currentTarget.style.color = CLIENT.brand.primary}
-      onMouseOut={e => e.currentTarget.style.color = '#64748b'}>
+      onMouseOut={e => e.currentTarget.style.color = 'rgba(255,255,255,0.7)'}>
       Sign out
     </button>
   )
@@ -52,11 +52,8 @@ export default function Header({ title, subtitle, actions }) {
       <div className="max-w-7xl mx-auto flex items-center justify-between">
         <div className="flex items-center gap-3">
           <Link href="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
-            <div style={{ background: CLIENT.brand.orange, borderRadius: '50%', width: 38, height: 38, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14, fontWeight: 900, color: 'white', fontFamily: 'Georgia, serif', flexShrink: 0 }}>
-              {CLIENT.logoText}
-            </div>
             <div>
-              <p className="text-xs font-bold tracking-widest leading-none" style={{ color: CLIENT.brand.orange }}>{CLIENT.fullName}</p>
+              <p className="text-xs font-bold tracking-widest leading-none" style={{ color: CLIENT.brand.primary }}>{CLIENT.fullName}</p>
               <p className="text-white font-semibold text-sm leading-tight mt-0.5">{title}</p>
               {subtitle && <p className="text-xs leading-none mt-0.5" style={{ color: '#94a3b8' }}>{subtitle}</p>}
             </div>
@@ -64,7 +61,10 @@ export default function Header({ title, subtitle, actions }) {
         </div>
         <div className="flex items-center gap-3">
           {actions}
-          <Link href="/" className="text-xs px-3 py-1.5 rounded-lg transition-colors hover:text-white" style={{ color: '#64748b' }}>← Home</Link>
+          <Link href="/" className="text-xs px-3 py-1.5 rounded-lg font-medium transition-colors"
+            style={{ color: '#ffffff' }}
+            onMouseOver={e => e.currentTarget.style.color = CLIENT.brand.primary}
+            onMouseOut={e => e.currentTarget.style.color = '#ffffff'}>← Home</Link>
           <SignOutButton />
         </div>
       </div>
