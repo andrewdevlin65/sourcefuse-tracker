@@ -1,5 +1,5 @@
 // ─────────────────────────────────────────────────────────
-// Client Configuration — GP Oil Tools
+// Client Configuration — SourceFuse
 // Change these values to rebrand the app for a different client.
 // No other files should contain hardcoded client-specific strings.
 // ─────────────────────────────────────────────────────────
@@ -7,130 +7,165 @@
 const CLIENT = {
 
   // ── Identity ──────────────────────────────────────────
-  id: 'gp-oil-tools',                         // Supabase client_id value
-  ingestId: 'gpot',                            // client_id used in ingest_log table
-  name: 'GP Oil Tools',                        // Short display name
-  fullName: 'GENERAL PETROLEUM OIL TOOLS',     // Header banner name (uppercase)
-  nameLine1: 'GENERAL PETROLEUM',              // Home page logo line 1
-  nameLine2: 'OIL TOOLS',                      // Home page logo line 2
-  logoText: 'GP',                              // Circle logo initials
-  industry: 'oil & gas equipment distributor',  // Used in AI prompts
-  location: 'Queensland, Australia',           // Used in AI prompts
+  id: 'sourcefuse',                              // Supabase client_id value
+  ingestId: 'sourcefuse',                         // client_id used in ingest_log table
+  name: 'SourceFuse',                             // Short display name
+  fullName: 'SOURCEFUSE TECHNOLOGIES',            // Header banner name (uppercase)
+  nameLine1: 'SOURCEFUSE',                        // Home page logo line 1
+  nameLine2: 'TECHNOLOGIES',                      // Home page logo line 2
+  logoText: '</SOURCEFUSE>',                      // Logo text
+  logoFont: 'monospace',                          // Logo font family
+  industry: 'AWS Premier Partner specializing in cloud-native solutions',  // Used in AI prompts
+  location: 'Jacksonville, FL',                   // Used in AI prompts
 
   // ── Branding / Colors ────────────────────────────────
   brand: {
-    orange: '#E8612C',
-    blue: '#1B3F6E',
-    blueDark: '#0f2847',
-    headerGradient: 'linear-gradient(135deg, #1B3F6E 0%, #0f2847 100%)',
+    primary: '#e8192c',
+    secondary: '#0f1117',
+    accent: '#ffffff',
+    headerGradient: 'linear-gradient(135deg, #0f1117 0%, #1a1d2e 100%)',
+    // Legacy aliases used by components that reference brand.orange / brand.blue
+    orange: '#e8192c',
+    blue: '#0f1117',
+    blueDark: '#0a0c10',
   },
 
   // ── Platform Branding ────────────────────────────────
   platform: {
-    name: 'Scaletech Sales Tracker',
-    tagline: 'Powered by Scaletech · Sales Xceleration',
+    name: 'Revenue Architecture Platform',
+    tagline: 'From $23M to $55M — tracked every week',
     company: 'Scaletech',
     partner: 'Sales Xceleration',
-    footer: 'Scaletech / Sales Xceleration',
-    motto: 'Strategic Growth, Delivered',
+    footer: 'Powered by Scaletech / Sales Xceleration',
+    motto: 'Revenue Architecture, Delivered',
   },
 
   // ── Locale & Currency ────────────────────────────────
-  locale: 'en-AU',
-  timezone: 'Australia/Sydney',
-  timezoneLabel: 'AEST',
-  currency: 'AUD',
+  locale: 'en-US',
+  timezone: 'America/New_York',
+  timezoneLabel: 'ET',
+  currency: 'USD',
   currencySymbol: '$',
 
   // ── CRM / Source System ──────────────────────────────
   crm: {
-    name: 'Acumatica',
-    opportunityPrefix: 'OPP',
-    campaignIdLabel: 'Acumatica Campaign ID',
-    bowReportName: 'Invoiced+Supplied+Unsupplied',
+    name: 'HubSpot',
+    opportunityPrefix: 'DEAL',
+    campaignIdLabel: 'HubSpot Campaign ID',
+    bowReportName: 'Pipeline Export',
   },
 
   // ── Fiscal Year ──────────────────────────────────────
-  // Fiscal year starts in July. FY2026 = Jul 2025 – Jun 2026.
-  fiscalYearStartMonth: 7,   // 1=Jan, 7=Jul
-  fiscalYears: ['FY2025', 'FY2026', 'FY2027'],
+  // Fiscal year starts in January. FY2025 = Jan 2025 – Dec 2025.
+  fiscalYearStartMonth: 1,   // 1=Jan, 7=Jul
+  fiscalYears: ['FY2024', 'FY2025', 'FY2026'],
 
   // Quarter mapping: month number → quarter name
-  // GP Oil Tools: Q1=Jul-Sep, Q2=Oct-Dec, Q3=Jan-Mar, Q4=Apr-Jun
+  // SourceFuse: Q1=Jan-Mar, Q2=Apr-Jun, Q3=Jul-Sep, Q4=Oct-Dec
   quarters: {
-    7: 'Q1', 8: 'Q1', 9: 'Q1',
-    10: 'Q2', 11: 'Q2', 12: 'Q2',
-    1: 'Q3', 2: 'Q3', 3: 'Q3',
-    4: 'Q4', 5: 'Q4', 6: 'Q4',
+    1: 'Q1', 2: 'Q1', 3: 'Q1',
+    4: 'Q2', 5: 'Q2', 6: 'Q2',
+    7: 'Q3', 8: 'Q3', 9: 'Q3',
+    10: 'Q4', 11: 'Q4', 12: 'Q4',
   },
 
   // Ordered quarter definitions (for dropdowns, iteration)
   quarterList: [
-    { name: 'Q1', months: ['07', '08', '09'] },
-    { name: 'Q2', months: ['10', '11', '12'] },
-    { name: 'Q3', months: ['01', '02', '03'] },
-    { name: 'Q4', months: ['04', '05', '06'] },
+    { name: 'Q1', months: ['01', '02', '03'] },
+    { name: 'Q2', months: ['04', '05', '06'] },
+    { name: 'Q3', months: ['07', '08', '09'] },
+    { name: 'Q4', months: ['10', '11', '12'] },
   ],
 
   // ── People ───────────────────────────────────────────
   reps: {
     // Account Executives — appear on forecast, accuracy, weekly actuals
-    ae: ['Kyle', 'Kris', 'Jake'],
+    ae: ['Alex Chen', 'Marcus Taylor'],
 
     // All reps shown on weekly form (includes non-AE roles)
-    weekly: ['Kyle', 'Greg', 'Jake', 'Kris', 'Will Croft'],
+    weekly: ['Alex Chen', 'Marcus Taylor'],
 
     // Reps for weekly actuals revenue tracking
-    weeklyActuals: ['Kyle', 'Jake', 'Kris'],
+    weeklyActuals: ['Alex Chen', 'Marcus Taylor'],
 
     // Reps on the month-end form (lowercase keys, display labels)
     monthEnd: [
-      { key: 'kyle', label: 'Kyle' },
-      { key: 'jake', label: 'Jake' },
-      { key: 'kris', label: 'Kris' },
+      { key: 'alex_chen', label: 'Alex Chen' },
+      { key: 'marcus_taylor', label: 'Marcus Taylor' },
     ],
 
     // GM / manager reps (for forecast page)
-    gm: ['Rob'],
+    gm: ['Kelly'],
 
     // All reps for accuracy tracking (AEs + GM)
-    accuracy: ['Kyle', 'Kris', 'Jake', 'Rob'],
+    accuracy: ['Alex Chen', 'Marcus Taylor', 'Kelly'],
 
     // Quota grid reps (setup page) — 'Company' is the aggregate row
-    quotaGrid: ['Company', 'Kyle', 'Kris', 'Jake', 'Inside Sales'],
+    quotaGrid: ['Company', 'Alex Chen', 'Marcus Taylor'],
 
     // Campaign owner options (CEO page dropdown)
-    campaignOwners: ['Kyle', 'Kris', 'Jake', 'Rob', 'Sam Cavallaro'],
+    campaignOwners: ['Alex Chen', 'Marcus Taylor', 'Kelly', 'Andrew Devlin', 'Joe Garrison'],
 
     // Default campaign owner
-    defaultCampaignOwner: 'Kyle',
+    defaultCampaignOwner: 'Alex Chen',
 
     // Default AE for new large deals
-    defaultDealRep: 'Kyle',
+    defaultDealRep: 'Alex Chen',
   },
 
   // ── Stakeholders (for AI report prompts) ─────────────
   stakeholders: {
-    gm: { name: 'Rob', title: 'GM Sales' },
-    ceo: { name: 'Andy', title: 'CEO' },
-    founder: { name: 'Sam', title: 'Founder' },
+    gm: { name: 'Kelly', title: 'CEO' },
+    ceo: { name: 'Andrew Devlin', title: 'Fractional CRO' },
+    founder: { name: 'Joe Garrison', title: 'Fractional Sales Director' },
   },
 
   // ── AI Defaults (fallbacks when report_settings table is empty) ──
   aiDefaults: {
-    reportPersona: 'You are a senior sales management consultant writing for GP Oil Tools executives (Rob GM Sales, Andy CEO, Sam Founder).',
-    communicationStyle: 'Direct but positive. Lead with wins before gaps.',
-    underperformanceFraming: 'Frame gaps as opportunities. Never assign blame.',
-    stakeholderNotes: 'Rob wants specifics, Andy wants the story, Sam wants trajectory.',
-    standardCloser: 'End with one specific concrete action.',
+    reportPersona: 'You are a strategic revenue advisor for SourceFuse, an AWS Premier Partner. You help CEO Kelly and fractional advisors Andrew Devlin and Joe Garrison track progress toward a $55M revenue target. SourceFuse has $23M current revenue, 80% recurring, 40 active accounts averaging $500K ACV. Revenue grows through 3 streams: recurring base, account expansion, and net new logos.',
+    communicationStyle: 'Data-driven and strategic. Lead with metrics, then context. Frame everything against the $23M→$55M growth trajectory.',
+    underperformanceFraming: 'Frame gaps as pipeline risks with specific remediation paths. Focus on leading indicators and account-level actions.',
+    stakeholderNotes: 'Kelly wants strategic trajectory and risk flags. Andrew Devlin wants pipeline mechanics and rep productivity. Joe Garrison wants deal-level detail and coaching insights.',
+    standardCloser: 'End with the single highest-leverage action for the coming week — name the account, the deal, or the initiative.',
     toneDefault: 'encouraging',
   },
 
   // Full AI system persona for the settings page default
-  defaultReportPersona: `You are a senior sales management consultant preparing a weekly revenue report on behalf of Scaletech for GP Oil Tools leadership in Queensland Australia. Write as an experienced advisor who understands the business and its people.`,
+  defaultReportPersona: `You are a strategic revenue advisor for SourceFuse, an AWS Premier Partner in Jacksonville FL. You prepare weekly revenue reports for CEO Kelly and fractional advisors Andrew Devlin (CRO) and Joe Garrison (Sales Director). Write as an experienced SaaS revenue leader who understands cloud services, recurring revenue models, and account expansion.`,
 
   // Report email recipients line
-  reportRecipients: 'Rob (GM Sales) · Andy (CEO) · Sam (Founder)',
+  reportRecipients: 'Kelly (CEO) · Andrew Devlin (Fractional CRO) · Joe Garrison (Fractional Sales Director)',
+
+  // ── Products / Service Lines ─────────────────────────
+  products: [
+    { id: 'arc', name: 'ARC by SourceFuse', color: '#e8192c' },
+    { id: 'cloud', name: 'Cloud Migration & Modernization', color: '#3b82f6' },
+    { id: 'appdev', name: 'Application Development', color: '#10b981' },
+    { id: 'digital', name: 'Digital Transformation', color: '#f59e0b' },
+    { id: 'managed', name: 'Managed Services', color: '#8b5cf6' },
+  ],
+
+  // ── Revenue Model ────────────────────────────────────
+  revenueModel: {
+    currentArr: 23000000,
+    recurringPct: 0.80,
+    activeAccounts: 40,
+    avgAcv: 500000,
+    targets: { year1: 25000000, year2: 35000000, year3: 55000000 },
+  },
+
+  // ── Hire Plan ────────────────────────────────────────
+  hirePlan: {
+    repQuota: 1000000,
+    repCost: 215000,
+    fractionalMonthly: 30000,
+    reps: [
+      { id: 1, name: 'Alex Chen', hireQuarter: 'Q1 Y1', status: 'active' },
+      { id: 2, name: 'Marcus Taylor', hireQuarter: 'Q4 Y1', status: 'ramping' },
+      { id: 3, name: 'TBD Rep 3', hireQuarter: 'Q3 Y2', status: 'planned' },
+      { id: 4, name: 'TBD Rep 4', hireQuarter: 'Q2 Y3', status: 'planned' },
+    ],
+  },
 }
 
 // ── Helpers ──────────────────────────────────────────────
@@ -140,6 +175,11 @@ CLIENT.getCurrentFY = function () {
   const now = new Date()
   const year = now.getFullYear()
   const month = now.getMonth() + 1
+  if (this.fiscalYearStartMonth === 1) {
+    // Calendar-year FY: FY2025 = Jan 2025 – Dec 2025
+    return `FY${year}`
+  }
+  // Mid-year FY: e.g. Jul start → FY2026 = Jul 2025 – Jun 2026
   return month >= this.fiscalYearStartMonth ? `FY${year + 1}` : `FY${year}`
 }
 
@@ -151,14 +191,18 @@ CLIENT.getCurrentQuarter = function () {
 
 /** Build 12-month array for a given fiscal year */
 CLIENT.getMonthsForFY = function (fy) {
-  const MONTH_NAMES = ['Jul','Aug','Sep','Oct','Nov','Dec','Jan','Feb','Mar','Apr','May','Jun']
-  const endYear = parseInt(fy.replace('FY', ''))
-  const startYear = endYear - 1
-  return MONTH_NAMES.map((m, i) => {
-    const year = i < 6 ? startYear : endYear
-    const monthNum = [7, 8, 9, 10, 11, 12, 1, 2, 3, 4, 5, 6][i]
+  const ALL_MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
+  const startIdx = this.fiscalYearStartMonth - 1  // 0-based index
+  const fyYear = parseInt(fy.replace('FY', ''))
+
+  return Array.from({ length: 12 }, (_, i) => {
+    const monthIdx = (startIdx + i) % 12
+    const monthNum = monthIdx + 1
+    // For Jan-start: all months are in fyYear
+    // For Jul-start: first 6 months (Jul-Dec) are in fyYear-1, last 6 (Jan-Jun) in fyYear
+    const year = (monthIdx < startIdx) ? fyYear : (startIdx === 0 ? fyYear : fyYear - 1)
     const date = `${year}-${String(monthNum).padStart(2, '0')}-01`
-    return { label: `${m} ${year}`, date }
+    return { label: `${ALL_MONTHS[monthIdx]} ${year}`, date }
   })
 }
 
