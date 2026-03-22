@@ -68,6 +68,16 @@ export default function Home() {
             <span className="text-xs text-gray-400">Weekly performance & reports</span>
           </Link>
 
+          <Link href="/revenue-bridge" className="flex items-center justify-between w-full text-white px-4 py-3 rounded-lg shadow-sm transition-colors hover:opacity-90" style={{ background: CLIENT.brand.secondary }}>
+            <span className="font-medium">🏗️ Revenue Architecture</span>
+            <span className="text-xs text-gray-300">$23M → $55M live model</span>
+          </Link>
+
+          <Link href="/hire-plan" className="flex items-center justify-between w-full bg-white border border-gray-200 text-gray-800 px-4 py-3 rounded-lg hover:bg-gray-50 shadow-sm transition-colors">
+            <span className="font-medium">👥 Hire Plan & ROI Gates</span>
+            <span className="text-xs text-gray-400">Rep timeline & gate scorecards</span>
+          </Link>
+
           <Link href="/accuracy" className="flex items-center justify-between w-full bg-white border border-gray-200 text-gray-800 px-4 py-3 rounded-lg hover:bg-gray-50 shadow-sm transition-colors">
             <span className="font-medium">🎯 Forecast Accuracy</span>
             <span className="text-xs text-gray-400">Stack rank & green boxes</span>
@@ -84,6 +94,11 @@ export default function Home() {
           <Link href="/setup" className="flex items-center justify-between w-full bg-white border border-gray-200 text-gray-800 px-4 py-3 rounded-lg hover:bg-gray-50 shadow-sm transition-colors">
             <span className="font-medium">⚙️ Setup — Quotas & Settings</span>
             <span className="text-xs text-gray-400">Quotas, actuals, forecast settings</span>
+          </Link>
+
+          <Link href="/assumptions" className="flex items-center justify-between w-full bg-white border border-gray-200 text-gray-800 px-4 py-3 rounded-lg hover:bg-gray-50 shadow-sm transition-colors">
+            <span className="font-medium">🔬 Model Assumptions</span>
+            <span className="text-xs text-gray-400">35 variables driving the forecast</span>
           </Link>
 
         </div>
