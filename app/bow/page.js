@@ -28,7 +28,7 @@ const mLabel = (d) => {
   try { return new Date(d+'T12:00:00').toLocaleString('default',{month:'short',year:'numeric'}) } catch { return null }
 }
 const MONTH_SORT = ['Sep 2025','Oct 2025','Nov 2025','Dec 2025','Jan 2026','Feb 2026','Mar 2026','Apr 2026','May 2026','Jun 2026','Jul 2026','Aug 2026']
-const TABS = ['Dashboard','Unsupplied','Supplied Not Invoiced','Invoiced','By Customer','Import']
+const TABS = ['Dashboard','Prospecting','Proposal','Negotiation','By Customer']
 
 export default function BowWave() {
   const [orders, setOrders] = useState([])
@@ -208,15 +208,15 @@ export default function BowWave() {
     return Object.values(m).sort((a,b)=>b.order_total_aud-a.order_total_aud)
   }
 
-  // Build Rob-style chart: current month 3 bars + forward months unsupplied by due date
+  // Pipeline chart: current month 3 bars + forward months by due date
   const chartData = []
-  // Current month: 3 separate bars (Invoiced, SNI, Unsupplied)
+  // Current month: 3 separate bars (Negotiation, Proposal, Prospecting)
   const curInvoiced = invoiced.filter(o=>o.month_label===currentMonth).reduce((s,o)=>s+(o.invoice_total_aud||0),0)
   const curSNI = sni.filter(o=>o.month_label===currentMonth).reduce((s,o)=>s+(o.order_total_aud||0),0)
   const curUnsupplied = unsupplied.filter(o=>o.month_label===currentMonth).reduce((s,o)=>s+(o.order_total_aud||0),0)
-  chartData.push({month:`Invoiced\n${currentMonth}`, invoiced:curInvoiced, sni:0, unsupplied:0, pipeline:curInvoiced})
-  chartData.push({month:`Supplied Not\nInvoiced ${currentMonth}`, invoiced:0, sni:curSNI, unsupplied:0, pipeline:curInvoiced+curSNI})
-  chartData.push({month:`Ordered\nUnsupplied ${currentMonth}`, invoiced:0, sni:0, unsupplied:curUnsupplied, pipeline:curInvoiced+curSNI+curUnsupplied})
+  chartData.push({month:`Negotiation\n${currentMonth}`, invoiced:curInvoiced, sni:0, unsupplied:0, pipeline:curInvoiced})
+  chartData.push({month:`Proposal\n${currentMonth}`, invoiced:0, sni:curSNI, unsupplied:0, pipeline:curInvoiced+curSNI})
+  chartData.push({month:`Prospecting\n${currentMonth}`, invoiced:0, sni:0, unsupplied:curUnsupplied, pipeline:curInvoiced+curSNI+curUnsupplied})
   // Forward months: unsupplied orders grouped by requested_on month
   const fwdMonths = {}
   unsupplied.filter(o=>o.month_label && o.month_label!==currentMonth).forEach(o=>{
@@ -294,8 +294,7 @@ export default function BowWave() {
 
   return (
     <div className="min-h-screen bg-slate-50">
-      <Header title="BOW Wave — Order Pipeline" subtitle={lastUpdated ? `${CLIENT.name} · Executive Pipeline Review · Data as of ${CLIENT.formatDateTime(lastUpdated)}` : `${CLIENT.name} · Executive Pipeline Review · Post-PO revenue tracking`}
-        actions={<button onClick={()=>setTab('Import')} className="text-white px-3 py-1.5 rounded-lg text-sm font-medium" style={{background:CLIENT.brand.orange}}>↑ Import Data</button>} />
+      <Header title="Pipeline Dashboard" subtitle={lastUpdated ? `${CLIENT.name} · Active deals by stream & product · Data as of ${CLIENT.formatDateTime(lastUpdated)}` : `${CLIENT.name} · Active deals by stream & product`} />
       <div className="max-w-7xl mx-auto px-6 py-4">
 
         <div className="flex gap-1 flex-wrap mb-6">
@@ -311,9 +310,8 @@ export default function BowWave() {
             {snap.length===0 ? (
               <div className="bg-white rounded-xl border border-gray-100 p-12 text-center">
                 <p className="text-4xl mb-3">📊</p>
-                <p className="text-gray-600 font-medium mb-2">No BOW Wave data yet</p>
-                <p className="text-gray-400 text-sm mb-6">Import the {CLIENT.crm.name} &quot;{CLIENT.crm.bowReportName}&quot; Excel report</p>
-                <button onClick={()=>setTab('Import')} className="text-white px-6 py-2.5 rounded-lg font-medium text-sm" style={{background:CLIENT.brand.blue}}>↑ Import Now</button>
+                <p className="text-gray-600 font-medium mb-2">No pipeline data yet</p>
+                <p className="text-gray-400 text-sm mb-6">Import deal data from {CLIENT.crm.name} to get started</p>
               </div>
             ) : (<>
               {/* KPI Cards */}
@@ -325,32 +323,32 @@ export default function BowWave() {
                   <div className="px-5 py-4">
                     <p className="text-xs text-gray-500 mb-1">Total Pipeline Value</p>
                     <p className="text-2xl font-bold" style={{color:CLIENT.brand.blue}}>{fmtFull(totalPipeline)}</p>
-                    <p className="text-xs text-gray-400 mt-0.5">Sum of all order values across all months</p>
+                    <p className="text-xs text-gray-400 mt-0.5">Sum of all deal values across all months</p>
                   </div>
                   <div className="px-5 py-4">
-                    <p className="text-xs text-gray-500 mb-1">✅ Invoiced</p>
+                    <p className="text-xs text-gray-500 mb-1">✅ Negotiation</p>
                     <p className="text-2xl font-bold text-green-700">{fmtFull(tI)}</p>
-                    <p className="text-xs text-gray-400 mt-0.5">Revenue recognised in current period</p>
+                    <p className="text-xs text-gray-400 mt-0.5">Late-stage deals in negotiation</p>
                   </div>
                   <div className="px-5 py-4">
-                    <p className="text-xs text-gray-500 mb-1">🚚 Supplied Not Invoiced</p>
+                    <p className="text-xs text-gray-500 mb-1">📋 Proposal</p>
                     <p className="text-2xl font-bold text-blue-700">{fmtFull(tS)}</p>
-                    <p className="text-xs text-gray-400 mt-0.5">Shipped — invoice conversion imminent</p>
+                    <p className="text-xs text-gray-400 mt-0.5">Proposals sent — awaiting decision</p>
                   </div>
                   <div className="px-5 py-4">
-                    <p className="text-xs text-gray-500 mb-1">📦 Ordered Unsupplied</p>
+                    <p className="text-xs text-gray-500 mb-1">🔍 Prospecting</p>
                     <p className="text-2xl font-bold text-amber-700">{fmtFull(tU)}</p>
-                    <p className="text-xs text-gray-400 mt-0.5">Open POs — committed future revenue</p>
+                    <p className="text-xs text-gray-400 mt-0.5">Early-stage deals in qualification</p>
                   </div>
                   <div className="px-5 py-4">
-                    <p className="text-xs text-gray-500 mb-1">Active Customers</p>
+                    <p className="text-xs text-gray-500 mb-1">Active Accounts</p>
                     <p className="text-2xl font-bold text-gray-800">{uniqueCustomers}</p>
-                    <p className="text-xs text-gray-400 mt-0.5">Customers with active order lines</p>
+                    <p className="text-xs text-gray-400 mt-0.5">Accounts with active deals</p>
                   </div>
                   <div className="px-5 py-4">
-                    <p className="text-xs text-gray-500 mb-1">Total Order Lines</p>
+                    <p className="text-xs text-gray-500 mb-1">Total Deal Lines</p>
                     <p className="text-2xl font-bold text-gray-800">{snap.length.toLocaleString()}</p>
-                    <p className="text-xs text-gray-400 mt-0.5">SO lines in current snapshot</p>
+                    <p className="text-xs text-gray-400 mt-0.5">Deal lines in current snapshot</p>
                   </div>
                 </div>
               </div>
@@ -371,17 +369,17 @@ export default function BowWave() {
                     </thead>
                     <tbody>
                       <tr className="border-t border-gray-100">
-                        <td className="px-4 py-3 font-medium text-green-700">✅ Invoiced</td>
+                        <td className="px-4 py-3 font-medium text-green-700">✅ Negotiation</td>
                         {monthData.map(m=><td key={m.month} className="text-right px-3 py-3 text-green-700 font-medium">{m.invoiced>0?fmt(m.invoiced):<span className="text-gray-200">—</span>}</td>)}
                         <td className="text-right px-4 py-3 font-bold text-green-700">{fmt(tI)}</td>
                       </tr>
                       <tr className="border-t border-gray-100 bg-blue-50">
-                        <td className="px-4 py-3 font-medium text-blue-700">🚚 Supplied Not Invoiced</td>
+                        <td className="px-4 py-3 font-medium text-blue-700">📋 Proposal</td>
                         {monthData.map(m=><td key={m.month} className="text-right px-3 py-3 text-blue-700 font-medium">{m.sni>0?fmt(m.sni):<span className="text-gray-200">—</span>}</td>)}
                         <td className="text-right px-4 py-3 font-bold text-blue-700">{fmt(tS)}</td>
                       </tr>
                       <tr className="border-t border-gray-100">
-                        <td className="px-4 py-3 font-medium text-amber-700">📦 Ordered Unsupplied</td>
+                        <td className="px-4 py-3 font-medium text-amber-700">🔍 Prospecting</td>
                         {monthData.map(m=><td key={m.month} className="text-right px-3 py-3 text-amber-700 font-medium">{m.unsupplied>0?fmt(m.unsupplied):<span className="text-gray-200">—</span>}</td>)}
                         <td className="text-right px-4 py-3 font-bold text-amber-700">{fmt(tU)}</td>
                       </tr>
@@ -395,9 +393,9 @@ export default function BowWave() {
                 </div>
               </div>
 
-              {/* Bow Wave chart */}
+              {/* Pipeline chart */}
               <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
-                <h3 className="font-bold text-gray-800 mb-1">Monthly Pipeline Bow Wave</h3>
+                <h3 className="font-bold text-gray-800 mb-1">Monthly Pipeline Overview</h3>
                 <p className="text-xs text-gray-400 mb-4">Bars = monthly value by stage · Line = cumulative pipeline</p>
                 <ResponsiveContainer width="100%" height={320}>
                   <ComposedChart data={monthData}>
@@ -407,10 +405,10 @@ export default function BowWave() {
                     <YAxis yAxisId="line" orientation="right" tickFormatter={v=>`$${(v/1000000).toFixed(1)}M`} tick={{fontSize:11}}/>
                     <Tooltip formatter={v=>fmt(v)}/>
                     <Legend/>
-                    <Bar yAxisId="bars" dataKey="invoiced" name="Invoiced" stackId="a" fill="#22c55e"/>
-                    <Bar yAxisId="bars" dataKey="sni" name="Supplied Not Invoiced" stackId="a" fill="#3b82f6"/>
-                    <Bar yAxisId="bars" dataKey="unsupplied" name="Unsupplied" stackId="a" fill="#f59e0b" radius={[3,3,0,0]}/>
-                    <Line yAxisId="line" type="monotone" dataKey="pipeline" name="Bow Wave" stroke={CLIENT.brand.blue} strokeWidth={2.5} dot={{r:4}}/>
+                    <Bar yAxisId="bars" dataKey="invoiced" name="Negotiation" stackId="a" fill="#22c55e"/>
+                    <Bar yAxisId="bars" dataKey="sni" name="Proposal" stackId="a" fill="#3b82f6"/>
+                    <Bar yAxisId="bars" dataKey="unsupplied" name="Prospecting" stackId="a" fill="#f59e0b" radius={[3,3,0,0]}/>
+                    <Line yAxisId="line" type="monotone" dataKey="pipeline" name="Pipeline" stroke={CLIENT.brand.blue} strokeWidth={2.5} dot={{r:4}}/>
                   </ComposedChart>
                 </ResponsiveContainer>
               </div>
@@ -426,9 +424,9 @@ export default function BowWave() {
                       <tr>
                         <th className="text-left px-4 py-3">Rank</th>
                         <th className="text-left px-4 py-3">Customer</th>
-                        <th className="text-right px-4 py-3">📦 Unsupplied</th>
-                        <th className="text-right px-4 py-3">🚚 SNI</th>
-                        <th className="text-right px-4 py-3">✅ Invoiced</th>
+                        <th className="text-right px-4 py-3">🔍 Prospecting</th>
+                        <th className="text-right px-4 py-3">📋 Proposal</th>
+                        <th className="text-right px-4 py-3">✅ Negotiation</th>
                         <th className="text-right px-4 py-3">Total</th>
                         <th className="text-right px-4 py-3">%</th>
                         <th className="px-4 py-3 w-32">Bar</th>
@@ -492,30 +490,30 @@ export default function BowWave() {
           </div>
         )}
 
-        {tab==='Unsupplied' && (
+        {tab==='Prospecting' && (
           <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
             <div className="px-5 py-4 border-b border-gray-100 flex justify-between">
-              <div><h3 className="font-semibold text-gray-800">📦 Unsupplied Orders</h3><p className="text-xs text-gray-400">PO received — awaiting shipment · {unsupplied.length} lines</p></div>
+              <div><h3 className="font-semibold text-gray-800">🔍 Prospecting Deals</h3><p className="text-xs text-gray-400">Early-stage deals in qualification · {unsupplied.length} lines</p></div>
               <span className="text-sm font-bold text-amber-700">{fmt(tU)}</span>
             </div>
             <Tbl data={unsupplied}/>
           </div>
         )}
 
-        {tab==='Supplied Not Invoiced' && (
+        {tab==='Proposal' && (
           <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
             <div className="px-5 py-4 border-b border-gray-100 flex justify-between">
-              <div><h3 className="font-semibold text-gray-800">🚚 Supplied Not Invoiced</h3><p className="text-xs text-gray-400">Shipped — invoice pending · {sni.length} lines</p></div>
+              <div><h3 className="font-semibold text-gray-800">📋 Proposal Deals</h3><p className="text-xs text-gray-400">Proposals sent — awaiting decision · {sni.length} lines</p></div>
               <span className="text-sm font-bold text-blue-700">{fmt(tS)}</span>
             </div>
             <Tbl data={sni}/>
           </div>
         )}
 
-        {tab==='Invoiced' && (
+        {tab==='Negotiation' && (
           <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
             <div className="px-5 py-4 border-b border-gray-100 flex justify-between">
-              <div><h3 className="font-semibold text-gray-800">✅ Invoiced</h3><p className="text-xs text-gray-400">Invoice raised · {invoiced.length} lines</p></div>
+              <div><h3 className="font-semibold text-gray-800">✅ Negotiation Deals</h3><p className="text-xs text-gray-400">Late-stage deals in negotiation · {invoiced.length} lines</p></div>
               <span className="text-sm font-bold text-green-700">{fmt(tI)}</span>
             </div>
             <Tbl data={invoiced} isInv/>
@@ -531,9 +529,9 @@ export default function BowWave() {
                   <tr>
                     <th className="text-left px-4 py-3">#</th>
                     <th className="text-left px-4 py-3">Customer</th>
-                    <th className="text-right px-4 py-3">📦 Unsupplied</th>
-                    <th className="text-right px-4 py-3">🚚 SNI</th>
-                    <th className="text-right px-4 py-3">✅ Invoiced</th>
+                    <th className="text-right px-4 py-3">🔍 Prospecting</th>
+                    <th className="text-right px-4 py-3">📋 Proposal</th>
+                    <th className="text-right px-4 py-3">✅ Negotiation</th>
                     <th className="text-right px-4 py-3">Total</th>
                     <th className="text-right px-4 py-3">%</th>
                   </tr>
@@ -566,66 +564,7 @@ export default function BowWave() {
           </div>
         )}
 
-        {tab==='Import' && (
-          <div className="space-y-6">
-            <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-6">
-              <h3 className="font-semibold text-gray-900 text-lg mb-1">Import {CLIENT.crm.name} Report</h3>
-              <p className="text-sm text-gray-500 mb-4">Upload the <strong>Invoiced+Supplied+Unsupplied</strong> Excel export. This single report covers all three pipeline stages.</p>
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6 text-sm text-blue-800">
-                <p className="font-semibold mb-1">How to export from {CLIENT.crm.name}:</p>
-                <ol className="list-decimal ml-4 space-y-1 text-xs">
-                  <li>Sales Orders → Reports → <strong>Invoiced+Supplied+Unsupplied</strong></li>
-                  <li>Set rolling 6 month date range</li>
-                  <li>Export → Excel (.xlsx)</li>
-                </ol>
-              </div>
-              <div onClick={()=>fileRef.current?.click()} className="border-2 border-dashed border-gray-300 rounded-xl p-12 text-center cursor-pointer hover:border-gray-400 transition-colors">
-                <p className="text-4xl mb-3">📂</p>
-                <p className="font-medium text-gray-700 mb-1">Click to select Excel file</p>
-                <p className="text-xs text-gray-400">.xlsx · Invoiced+Supplied+Unsupplied report</p>
-                <input ref={fileRef} type="file" accept=".xlsx,.xls" onChange={handleFile} className="hidden"/>
-              </div>
-              {importing && (
-                <div className="mt-4 bg-blue-50 border border-blue-200 rounded-lg px-4 py-3 flex items-center gap-2">
-                  <div className="w-4 h-4 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"/>
-                  <p className="text-sm text-blue-700">{status}</p>
-                </div>
-              )}
-              {!importing && status && (
-                <div className={`mt-4 rounded-lg px-4 py-3 text-sm ${status.startsWith('✅')?'bg-green-50 border border-green-200 text-green-700':'bg-red-50 border border-red-200 text-red-700'}`}>
-                  {status}
-                </div>
-              )}
-            </div>
-            {snaps.length>0 && (
-              <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
-                <div className="px-5 py-4 border-b border-gray-100"><h3 className="font-semibold text-gray-800">Import History</h3></div>
-                <table className="w-full text-sm">
-                  <thead className="bg-gray-50 text-xs text-gray-500 uppercase tracking-wide">
-                    <tr>
-                      <th className="text-left px-4 py-3">Date</th>
-                      <th className="text-right px-4 py-3">Lines</th>
-                      <th className="text-right px-4 py-3">📦 Unsupplied</th>
-                      <th className="text-right px-4 py-3">🚚 SNI</th>
-                      <th className="text-right px-4 py-3">✅ Invoiced</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-gray-50">
-                    {snaps.map((s,i)=>(
-                      <tr key={s.id} className="hover:bg-gray-50">
-                        <td className="px-4 py-3 font-medium text-gray-900">{s.import_date}{i===0&&<span className="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full ml-2">Latest</span>}</td>
-                        <td className="px-4 py-3 text-right text-gray-600">{s.total_orders}</td>
-                        <td className="px-4 py-3 text-right text-amber-700">{fmt(s.total_unsupplied)}</td>
-                        <td className="px-4 py-3 text-right text-blue-700">{fmt(s.total_supplied_not_invoiced)}</td>
-                        <td className="px-4 py-3 text-right text-green-700">{fmt(s.total_invoiced)}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            )}
-          </div>
-        )}
+        {/* Import tab removed — data comes via API ingest */}
       </div>
     </div>
   )

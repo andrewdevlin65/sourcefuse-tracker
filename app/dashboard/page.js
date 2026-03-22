@@ -7,7 +7,7 @@ export default function Dashboard() {
   useEffect(() => { router.replace('/forecast') }, [])
   return (
     <div className="min-h-screen bg-slate-50 flex items-center justify-center">
-      <p className="text-gray-400">Redirecting to GM Forecast...</p>
+      <p className="text-gray-400">Redirecting to Forecast...</p>
     </div>
   )
 }

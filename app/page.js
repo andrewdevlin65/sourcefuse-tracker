@@ -23,14 +23,9 @@ export default function Home() {
       {/* Client Header */}
       <div style={{ background: CLIENT.brand.headerGradient }} className="text-white px-6 py-8">
         <div className="max-w-md mx-auto text-center">
-          <div className="flex items-center justify-center gap-4 mb-3">
-            <div style={{ background: CLIENT.brand.orange, borderRadius: '50%', width: 52, height: 52, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18, fontWeight: 900, color: 'white', fontFamily: 'Georgia, serif', flexShrink: 0 }}>
-              {CLIENT.logoText}
-            </div>
-            <div className="text-left">
-              <h1 className="text-2xl font-bold tracking-wide">{CLIENT.nameLine1}</h1>
-              <p className="text-sm tracking-widest" style={{ color: CLIENT.brand.orange }}>{CLIENT.nameLine2}</p>
-            </div>
+          <div className="mb-3">
+            <h1 className="text-2xl font-bold tracking-wide">{CLIENT.nameLine1}</h1>
+            <p className="text-sm tracking-widest" style={{ color: CLIENT.brand.primary }}>{CLIENT.nameLine2}</p>
           </div>
           <p className="text-slate-400 text-xs font-medium uppercase tracking-widest mt-2">{CLIENT.platform.name}</p>
           <p className="text-blue-200 text-sm mt-1">{fyLabel}</p>
@@ -64,8 +59,8 @@ export default function Home() {
           <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide px-1 pt-2">Reporting</p>
 
           <Link href="/bow" className="flex items-center justify-between w-full bg-white border border-gray-200 text-gray-800 px-4 py-3 rounded-lg hover:bg-gray-50 shadow-sm transition-colors">
-            <span className="font-medium">🌊 BOW Wave — Order Pipeline</span>
-            <span className="text-xs text-gray-400">Post-PO: Unsupplied → Shipped → Invoiced</span>
+            <span className="font-medium">📊 Pipeline Dashboard</span>
+            <span className="text-xs text-gray-400">Active deals by stream & product</span>
           </Link>
 
           <Link href="/ceo" className="flex items-center justify-between w-full bg-white border border-gray-200 text-gray-800 px-4 py-3 rounded-lg hover:bg-gray-50 shadow-sm transition-colors">

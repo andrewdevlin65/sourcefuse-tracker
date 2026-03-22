@@ -51,7 +51,10 @@ export default function LoginPage() {
           </div>
           {error && <p className="text-red-600 text-sm">{error}</p>}
           <button type="submit" disabled={loading}
-            className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white py-2.5 rounded-lg font-medium disabled:opacity-50 shadow-sm hover:shadow-md transition-all">
+            className="w-full text-white py-2.5 rounded-lg font-medium disabled:opacity-50 shadow-sm hover:shadow-md transition-all"
+            style={{ background: CLIENT.brand.primary }}
+            onMouseOver={e => e.currentTarget.style.opacity = '0.9'}
+            onMouseOut={e => e.currentTarget.style.opacity = '1'}>
             {loading ? 'Signing in...' : 'Sign in'}
           </button>
         </form>
