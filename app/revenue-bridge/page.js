@@ -13,7 +13,9 @@ export default function RevenueBridgePage() {
   const [actuals, setActuals] = useState([])
   const [loading, setLoading] = useState(true)
   const [view, setView] = useState('stream')
-  const [sliders, setSliders] = useState({ expansion: 15, quota: 1000000, retention: 70 })
+  const [sliderExpansion, setSliderExpansion] = useState(0.15)
+  const [sliderQuota, setSliderQuota] = useState(1000000)
+  const [sliderRetention, setSliderRetention] = useState(0.70)
 
   useEffect(() => { loadData() }, [])
 
@@ -27,7 +29,9 @@ export default function RevenueBridgePage() {
       const merged = { ...DEFAULT_ASSUMPTIONS }
       aRows.forEach(r => { if (r.value_y1 != null) merged[r.assumption_key] = r.value_y1 })
       setAssumptions(merged)
-      setSliders({ expansion: Math.round(merged.expansion_rate_y1 * 100), quota: merged.rep_quota, retention: Math.round(merged.retention_y1 * 100) })
+      setSliderExpansion(merged.expansion_rate_y1)
+      setSliderQuota(merged.rep_quota)
+      setSliderRetention(merged.retention_y1)
     }
     setActuals(sRows || [])
     setLoading(false)
@@ -35,16 +39,16 @@ export default function RevenueBridgePage() {
 
   const model = useMemo(() => calculateRevenueModel(assumptions), [assumptions])
 
-  const liveModel = useMemo(() => calculateRevenueModel({
+  const sensitivityModel = useMemo(() => calculateRevenueModel({
     ...assumptions,
-    expansion_rate_y1: sliders.expansion / 100,
-    expansion_rate_y2: (sliders.expansion + 5) / 100,
-    expansion_rate_y3: (sliders.expansion + 10) / 100,
-    rep_quota: sliders.quota,
-    retention_y1: sliders.retention / 100,
-    retention_y2: (sliders.retention + 5) / 100,
-    retention_y3: (sliders.retention + 10) / 100,
-  }), [assumptions, sliders])
+    expansion_rate_y1: sliderExpansion,
+    expansion_rate_y2: sliderExpansion + 0.05,
+    expansion_rate_y3: sliderExpansion + 0.10,
+    rep_quota: sliderQuota,
+    retention_y1: sliderRetention,
+    retention_y2: sliderRetention + 0.05,
+    retention_y3: sliderRetention + 0.10,
+  }), [sliderExpansion, sliderQuota, sliderRetention, assumptions])
 
   // Chart data
   const stackedData = [
@@ -188,26 +192,44 @@ export default function RevenueBridgePage() {
             <p className="text-xs text-gray-400">Move any lever to see the impact on your $55M date</p>
           </div>
           <div className="flex items-center gap-4 bg-gray-50 rounded-lg p-4">
-            <p className="text-lg font-bold" style={{ color: CLIENT.brand.primary }}>{liveModel.projected_55m_quarter}</p>
-            <p className={`text-sm font-medium ${liveModel.projected_55m_on_track ? 'text-green-600' : 'text-amber-600'}`}>
-              {liveModel.months_ahead_behind >= 0 ? `${liveModel.months_ahead_behind}mo ahead` : `${Math.abs(liveModel.months_ahead_behind)}mo behind`}
+            <p className="text-lg font-bold" style={{ color: CLIENT.brand.primary }}>{sensitivityModel.projected_55m_quarter}</p>
+            <p className={`text-sm font-medium ${sensitivityModel.projected_55m_on_track ? 'text-green-600' : 'text-amber-600'}`}>
+              {sensitivityModel.months_ahead_behind >= 0 ? `${sensitivityModel.months_ahead_behind}mo ahead` : `${Math.abs(sensitivityModel.months_ahead_behind)}mo behind`}
             </p>
           </div>
-          {[
-            { key: 'expansion', label: 'Expansion Rate', min: 10, max: 35, step: 1, suffix: '%' },
-            { key: 'quota', label: 'Rep Quota', min: 500000, max: 2000000, step: 50000, prefix: '$', format: v => `$${(v / 1000000).toFixed(1)}M` },
-            { key: 'retention', label: 'Retention Rate', min: 60, max: 95, step: 1, suffix: '%' },
-          ].map(s => (
-            <div key={s.key}>
-              <div className="flex justify-between text-sm mb-1">
-                <span className="font-medium text-gray-700">{s.label}</span>
-                <span className="font-semibold text-gray-900">{s.format ? s.format(sliders[s.key]) : `${sliders[s.key]}${s.suffix || ''}`}</span>
-              </div>
-              <input type="range" min={s.min} max={s.max} step={s.step} value={sliders[s.key]}
-                onChange={e => setSliders(prev => ({ ...prev, [s.key]: parseFloat(e.target.value) }))}
-                className="w-full h-2 rounded-lg appearance-none cursor-pointer" style={{ accentColor: CLIENT.brand.primary }} />
+
+          {/* Expansion Rate */}
+          <div>
+            <div className="flex justify-between text-sm mb-1">
+              <span className="font-medium text-gray-700">Expansion Rate</span>
+              <span className="font-semibold text-gray-900">{Math.round(sliderExpansion * 100)}%</span>
             </div>
-          ))}
+            <input type="range" min={0.10} max={0.35} step={0.01} value={sliderExpansion}
+              onChange={e => setSliderExpansion(parseFloat(e.target.value))}
+              className="w-full h-2 rounded-lg appearance-none cursor-pointer" style={{ accentColor: CLIENT.brand.primary }} />
+          </div>
+
+          {/* Rep Quota */}
+          <div>
+            <div className="flex justify-between text-sm mb-1">
+              <span className="font-medium text-gray-700">Rep Quota</span>
+              <span className="font-semibold text-gray-900">${(sliderQuota / 1000000).toFixed(1)}M</span>
+            </div>
+            <input type="range" min={500000} max={2000000} step={50000} value={sliderQuota}
+              onChange={e => setSliderQuota(parseFloat(e.target.value))}
+              className="w-full h-2 rounded-lg appearance-none cursor-pointer" style={{ accentColor: CLIENT.brand.primary }} />
+          </div>
+
+          {/* Retention Rate */}
+          <div>
+            <div className="flex justify-between text-sm mb-1">
+              <span className="font-medium text-gray-700">Retention Rate</span>
+              <span className="font-semibold text-gray-900">{Math.round(sliderRetention * 100)}%</span>
+            </div>
+            <input type="range" min={0.60} max={0.95} step={0.01} value={sliderRetention}
+              onChange={e => setSliderRetention(parseFloat(e.target.value))}
+              className="w-full h-2 rounded-lg appearance-none cursor-pointer" style={{ accentColor: CLIENT.brand.primary }} />
+          </div>
         </div>
 
       </div>
