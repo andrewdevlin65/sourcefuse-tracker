@@ -1,5 +1,8 @@
 'use client'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
+import { supabase } from '../lib/supabase'
 import CLIENT from '../../config/client'
 
 export function ScaletechBar() {
@@ -10,6 +13,34 @@ export function ScaletechBar() {
         <span>{CLIENT.platform.tagline}</span>
       </div>
     </div>
+  )
+}
+
+function SignOutButton() {
+  const [session, setSession] = useState(null)
+  const router = useRouter()
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data }) => setSession(data.session))
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => setSession(session))
+    return () => subscription.unsubscribe()
+  }, [])
+
+  if (!session) return null
+
+  const handleSignOut = async () => {
+    await supabase.auth.signOut()
+    router.push('/login')
+  }
+
+  return (
+    <button onClick={handleSignOut}
+      className="text-xs px-2 py-1 rounded transition-colors"
+      style={{ color: '#64748b' }}
+      onMouseOver={e => e.currentTarget.style.color = CLIENT.brand.primary}
+      onMouseOut={e => e.currentTarget.style.color = '#64748b'}>
+      Sign out
+    </button>
   )
 }
 
@@ -34,6 +65,7 @@ export default function Header({ title, subtitle, actions }) {
         <div className="flex items-center gap-3">
           {actions}
           <Link href="/" className="text-xs px-3 py-1.5 rounded-lg transition-colors hover:text-white" style={{ color: '#64748b' }}>← Home</Link>
+          <SignOutButton />
         </div>
       </div>
     </div>
