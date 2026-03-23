@@ -63,6 +63,11 @@ export default function Home() {
             <span className="text-xs text-gray-400">Active deals by stream & product</span>
           </Link>
 
+          <Link href="/opportunities" className="flex items-center justify-between w-full bg-white border border-gray-200 text-gray-800 px-4 py-3 rounded-lg hover:bg-gray-50 shadow-sm transition-colors">
+            <span className="font-medium">💼 Opportunities</span>
+            <span className="text-xs text-gray-400">Import & lost deal analysis</span>
+          </Link>
+
           <Link href="/ceo" className="flex items-center justify-between w-full bg-white border border-gray-200 text-gray-800 px-4 py-3 rounded-lg hover:bg-gray-50 shadow-sm transition-colors">
             <span className="font-medium">📈 Revenue Tracker</span>
             <span className="text-xs text-gray-400">Weekly performance & reports</span>
